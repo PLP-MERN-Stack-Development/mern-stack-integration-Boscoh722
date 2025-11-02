@@ -9,24 +9,28 @@ const useApi = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api${endpoint}`, {
+      const response = await fetch(`/api${endpoint}`, {  // ← /api ensures proxy
         method,
         headers: { 'Content-Type': 'application/json' },
         body: body ? JSON.stringify(body) : null,
       });
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || 'Network response was not ok');
+
+      if (!response.ok) {
+        const text = await response.text();  // Get raw text for debugging
+        console.error('Raw response:', text);  // Check console for HTML
+        throw new Error(`HTTP ${response.status}: ${text.substring(0, 200)}`);
       }
-      const json = await res.json();
-      setData(Array.isArray(json) ? json : [json]); // Normalize to array
+
+      const json = await response.json();
+      setData(Array.isArray(json) ? json : [json]);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Fetch failed');
       setData([]);
+      console.error('API error:', err);
     } finally {
       setLoading(false);
     }
-  }, []); // Empty deps: fetchData is stable across renders
+  }, []);
 
   return { data, loading, error, fetchData };
 };

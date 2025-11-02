@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'; // Optional: for reset on route change
 import PropTypes from 'prop-types';
